@@ -9,6 +9,7 @@ if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
   SLACK_TITLE="Dokku Notifier"
   COMMIT_HASH=$(cat "$DOKKU_ROOT/$APP/refs/heads/master" 2> /dev/null | cut -c1-8)
+  COMMIT_HASH=$(dokku git:report $APP --git-sha)
   SLACK_TEXT="Deployed ${COMMIT_HASH} to ${APP}"
   SLACK_JSON="{\
     \"username\": \"$SLACK_TITLE\", \
