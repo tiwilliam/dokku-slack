@@ -2,16 +2,14 @@
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 APP="$1"
-IMAGE1="$2"
-IMAGE2="$3"
-IMAGE3="$4"
 
 if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
   echo "-----> Notifying Slack ..."
   URL=$(dokku url $APP)
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
   SLACK_TITLE="Dokku Notifier"
-  SLACK_TEXT="Deployed ${IMAGE1} ${IMAGE2} ${IMAGE3} to ${APP}"
+  COMMIT_HASH=$(cat "$DOKKU_ROOT/$APP/refs/heads/master" 2> /dev/null | cut -c1-8)
+  SLACK_TEXT="Deployed ${COMMIT_HASH} to ${APP}"
   SLACK_JSON="{\
     \"username\": \"$SLACK_TITLE\", \
     \"text\": \"$SLACK_TEXT\", \
