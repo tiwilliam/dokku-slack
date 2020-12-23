@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+
+APP="$1"
+IMAGE="$4"
+
+$APP $INTERNAL_PORT $INTERNAL_IP_ADDRESS $IMAGE_TAG
+
+if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
+  echo "-----> Notifying Slack ..."
+  URL=$(dokku url $APP)
+  SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
+  SLACK_TITLE=""
+  SLACK_TEXT="Deployed ${IMAGE} to ${APP}"
+  SLACK_JSON="{\
+    \"channel\": \"#testar\", \
+    \"username\": \"$SLACK_TITLE\", \
+    \"text\": \"$SLACK_TEXT\", \
+    \"icon_emoji\": \":package:\" \
+  }"
+  RESPONSE_CODE=$(curl -s -o/dev/null -d "payload=$SLACK_JSON" "${SLACK_URL}" -w "%{http_code}")
+  echo "       HTTP ${RESPONSE_CODE}"
+fi
