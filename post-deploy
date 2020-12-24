@@ -6,11 +6,13 @@ declare APP="$1"
 if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
   echo "-----> Notifying Slack ..."
 
+  eval $(dokku config:export $APP | grep GIT_REV)
+
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
 
   SLACK_JSON="{\
     \"username\": \"Dokku Notifier\", \
-    \"text\": \"Deployed to ${APP}\", \
+    \"text\": \"Deployed ${GIT_REV} to ${APP}\", \
     \"icon_emoji\": \":package:\" \
   }"
 
