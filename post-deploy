@@ -12,11 +12,9 @@ if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
 
   SLACK_JSON="{\
     \"username\": \"Dokku Notifier\", \
-    \"text\": \"Deployed ${GIT_REV} to ${APP}\", \
+    \"text\": \"Deployed $(echo $GIT_REV | cut -c 1-8) to ${APP}\", \
     \"icon_emoji\": \":package:\" \
   }"
-
-  env
 
   RESPONSE_CODE=$(curl -s -o/dev/null -d "payload=$SLACK_JSON" "${SLACK_URL}" -w "%{http_code}")
 
