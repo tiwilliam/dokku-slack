@@ -8,20 +8,15 @@ if [[ -f "$DOKKU_ROOT/$APP/SLACK_URL" || -f "$DOKKU_ROOT/SLACK_URL" ]]; then
 
   SLACK_URL=$(cat "$DOKKU_ROOT/$APP/SLACK_URL" 2> /dev/null || cat "$DOKKU_ROOT/SLACK_URL" 2> /dev/null)
 
-  NEW_REV=$(cat "$DOKKU_ROOT/$APP/SLACK_NEW_REV" 2> /dev/null)
-  OLD_REV=$(cat "$DOKKU_ROOT/$APP/SLACK_OLD_REV" 2> /dev/null)
-
-  if [ "${OLD_REV}" != "" ]; then
-    TEXT="Deployed ${OLD_REV}...${NEW_REV} to ${APP}"
-  else
-    TEXT="Deployed ${NEW_REV} to ${APP}"
-  fi
-
   SLACK_JSON="{\
     \"username\": \"Dokku Notifier\", \
-    \"text\": \"$TEXT\", \
+    \"text\": \"Deployed to ${APP}\", \
     \"icon_emoji\": \":package:\" \
   }"
+
+  env
+
   RESPONSE_CODE=$(curl -s -o/dev/null -d "payload=$SLACK_JSON" "${SLACK_URL}" -w "%{http_code}")
+
   echo "       HTTP ${RESPONSE_CODE}"
 fi
